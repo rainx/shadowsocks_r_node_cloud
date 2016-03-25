@@ -16,7 +16,9 @@
     "build": "npm run coffee && npm run js",
     "watch:coffee": "onchange 'src/*.coffee' -- npm run coffee",
     "watch:js": "onchange 'src/*.js' -- npm run js",
-    "watch": "parallelshell 'npm run watch:coffee' 'npm run watch:js'"
+    "watch": "parallelshell 'npm run watch:coffee' 'npm run watch:js'",
+
+    "server" : "node --harmony server.js"
   },
   "engines": {}
 }

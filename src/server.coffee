@@ -4,6 +4,8 @@ path = require("path")
 http = require("http")
 parseArgs = require("minimist")
 Encryptor = require("./encrypt").Encryptor
+ProtocolAuth = require("./ProtocolAuth").ProtocolAuth
+ServerInfo = require('./ProtocolAuth').ServerInfo
 
 options =
   alias:
@@ -18,23 +20,37 @@ options =
     'method': process.env.METHOD
     'config_file': path.resolve(__dirname, "config.json")
 
+
+
 inetNtoa = (buf) ->
   buf[0] + "." + buf[1] + "." + buf[2] + "." + buf[3]
 
 configFromArgs = parseArgs process.argv.slice(2), options
 configFile = configFromArgs.config_file
 configContent = fs.readFileSync(configFile)
+
+
 config = JSON.parse(configContent)
+
 for k, v of configFromArgs
-  config[k] = v
+  if (configFromArgs[k])
+    config[k] = v
 timeout = Math.floor(config.timeout * 1000)
 PORT = config.remote_port
 KEY = config.password
 METHOD = config.method
 
+# open from env
+enableAuthSimple = process.env.AUTH_SIMPLE || false;
+
+if config["auth_simple"]
+  enableAuthSimple = config['auth_simple']
+
 server = http.createServer (req, res) ->
   res.writeHead 200, 'Content-Type':'text/plain'
   res.end 'Good Day!'
+
+server.obfs_data = (new ProtocolAuth()).initData()
 
 server.on 'upgrade', (req, connection, head) ->
   connection.write 'HTTP/1.1 101 Web Socket Protocol Handshake\r\n' +
@@ -45,6 +61,7 @@ server.on 'upgrade', (req, connection, head) ->
   server.getConnections (err, count) ->
     console.log "concurrent connections:", count
     return
+
   encryptor = new Encryptor(KEY, METHOD)
   stage = 0
   headerLength = 0
@@ -53,8 +70,21 @@ server.on 'upgrade', (req, connection, head) ->
   addrLen = 0
   remoteAddr = null
   remotePort = null
+
+  connection.protocal_auth = new ProtocolAuth()
+  server_info = new ServerInfo(server.obfs_data)
+
+  connection.protocal_auth.setServerInfo(server_info)
+
   connection.on "data", (data) ->
     data = encryptor.decrypt data
+
+    if enableAuthSimple
+      try
+        data = connection.protocal_auth.serverPostDecrypt(data)
+      catch e
+        console.log(e)
+
     if stage is 5
       connection.pause() unless remote.write(data)
       return
@@ -90,6 +120,11 @@ server.on 'upgrade', (req, connection, head) ->
           stage = 5
         )
         remote.on "data", (data) ->
+          if (enableAuthSimple)
+            try
+              data = connection.protocal_auth.serverPreEncrypt(data)
+            catch e
+              console.log(e)
           data = encryptor.encrypt data
           remote.pause() unless connection.write(data)
 
