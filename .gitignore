@@ -4,6 +4,6 @@
 node_modules
 config.json
 test/
-/*.js
+# /*.js
 .idea
 Cakefile
