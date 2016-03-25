@@ -1,9 +1,9 @@
 {
   "server": [
-    "rainxnetwork.herokuapp.com"
+    "something.herokuapp.com"
   ],
   "local_port": 12080,
-  "password": "thisisrainx",
+  "password": "alibaba",
   "timeout": 600,
   "method": "rc4",
   "auth_simple" : true
