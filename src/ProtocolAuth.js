@@ -21,7 +21,7 @@ class ProtocolAuth {
         this.has_recv_header = false;
         this.client_id = 0;
         this.connection_id = 0;
-        this.max_time_dif = 60 * 60; // 从5分钟修改为1个小时
+        this.max_time_dif = 60 * 60 * 2; // 从5分钟修改为2个小时
     }
 
     initData() {
@@ -218,7 +218,7 @@ class ObfsAuthData {
             let active = 0;
 
             for (let cid in this.client_id) {
-                if (this.client_id[cid].is_active()) {
+                if (this.client_id[cid].isActive()) {
                     active++;
                 }
             }
