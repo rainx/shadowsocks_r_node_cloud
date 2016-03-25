@@ -6,8 +6,8 @@ Patch by RainX
 
 修改了dotcloud版本的引擎，增加了 ShadowsocksR 里面的obfs_protocol: auth_simple , 但是与ShadowsocksR是不兼容的，因为是HTTP-upgrade-to Websocks 的形式，所以需要配合我开发的一个 Shadowsocks 版本的 shadowsocks-libev 的插件 ws_simple 使用。
 
-服务器auth_simple 插件参见 : src/ProtocolAuth.js
-
+* 服务器auth_simple 插件参见 : src/ProtocolAuth.js
+* 客户端ws_simple插件参见 ： client_plugins/obfs_ws.c , 需要结合 @breakwa11 的 https://github.com/breakwa11/shadowsocks-libev 编译
 
 
 shadowsocks-heroku is a lightweight tunnel proxy which can help you get through firewalls. It is a port of [shadowsocks](https://github.com/clowwindy/shadowsocks), but through a different protocol.
