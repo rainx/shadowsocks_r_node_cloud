@@ -1,0 +1,10 @@
+{
+  "server": [
+    "rainxnetwork.herokuapp.com"
+  ],
+  "local_port": 12080,
+  "password": "thisisrainx",
+  "timeout": 600,
+  "method": "rc4",
+  "auth_simple" : true
+}
